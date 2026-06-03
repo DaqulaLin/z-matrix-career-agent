@@ -1,4 +1,4 @@
-# 官方推荐配置：显式注入环境变量，防止 ADK 初始化迷路
+# Officially recommended configuration: explicitly inject environment variables to prevent ADK initialization issues
 gcloud run deploy compass-job-api \
   --source . \
   --region asia-northeast1 \

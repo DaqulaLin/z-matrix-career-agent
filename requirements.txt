@@ -4,4 +4,4 @@ google-genai
 google-adk>=0.1.0
 google-cloud-aiplatform>=1.70.0
 google-cloud-discoveryengine
-# 移除 flask 和 gunicorn，这里不需要了
+# Removed flask and gunicorn as they are no longer needed
