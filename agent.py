@@ -127,19 +127,25 @@ def run_compass_engine(target_job, mode):
     for event in events:
         print(f"[Event Trace] Raw event received: {repr(event)}")
         try:
+            # Extract the actual response object if wrapped in an ADK Event
+            payload = event.output if hasattr(event, 'output') else event
+            
             # Path 1: Direct text (most common)
-            if hasattr(event, 'text') and event.text:
-                final_result += event.text
+            if hasattr(payload, 'text') and payload.text:
+                final_result += payload.text
             # Path 2: Nested content parts (common in newer 2.5 versions)
-            elif hasattr(event, 'content') and event.content.parts:
-                for part in event.content.parts:
+            elif hasattr(payload, 'content') and payload.content.parts:
+                for part in payload.content.parts:
                     if hasattr(part, 'text') and part.text:
                         final_result += part.text
             # Path 3: Compatible with older message structures
-            elif hasattr(event, 'message') and event.message.content:
-                for part in event.message.content.parts:
+            elif hasattr(payload, 'message') and payload.message.content:
+                for part in payload.message.content.parts:
                     if hasattr(part, 'text') and part.text:
                         final_result += part.text
+            # Path 4: String payload fallback
+            elif isinstance(payload, str):
+                final_result += payload
         except Exception as e:
             print(f"[Event Trace Error] Failed to parse event: {e}")
             continue
