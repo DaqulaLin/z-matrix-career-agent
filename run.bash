@@ -1,5 +1,5 @@
 # Officially recommended configuration: explicitly inject environment variables to prevent ADK initialization issues
-gcloud run deploy z-matrix-career-demo \
+gcloud run deploy compass-job-api \
   --source . \
   --region asia-northeast1 \
   --memory 2Gi \
