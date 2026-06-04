@@ -74,6 +74,39 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 def serve_index():
     return FileResponse("static/index.html")
 
+# Debug datastores endpoint
+@app.get("/debug_ds")
+def debug_ds():
+    try:
+        from google.cloud import discoveryengine_v1 as discoveryengine
+        client = discoveryengine.DataStoreServiceClient()
+        
+        results = {}
+        
+        # Check global
+        parent_global = "projects/spatial-cargo-484310-t2/locations/global/collections/default_collection"
+        try:
+            global_ds = []
+            for ds in client.list_data_stores(parent=parent_global):
+                global_ds.append(ds.name)
+            results["global"] = global_ds
+        except Exception as e:
+            results["global_error"] = str(e)
+            
+        # Check asia-northeast1
+        parent_asia = "projects/spatial-cargo-484310-t2/locations/asia-northeast1/collections/default_collection"
+        try:
+            asia_ds = []
+            for ds in client.list_data_stores(parent=parent_asia):
+                asia_ds.append(ds.name)
+            results["asia-northeast1"] = asia_ds
+        except Exception as e:
+            results["asia_error"] = str(e)
+            
+        return results
+    except Exception as e:
+        return {"error": str(e)}
+
 # Health check interface
 @app.get("/health")
 def health_check():
