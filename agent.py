@@ -23,46 +23,42 @@ tool_macro    = VertexAiSearchTool(data_store_id=PATH_MACRO)
 
 def get_master_instruction(target_job, mode):
     mode_instructions = {
-        "modern": (
-            "[PERSPECTIVE: Western Corporate Science] Use modern game theory, agile enterprise frameworks, "
-            "and ROI leverage for deduction. Focus heavily on data efficiency and absolute monetization capabilities."
-        ),
-        "oriental": (
-            "[PERSPECTIVE: Cyber-Oriental Wisdom & Karma Dynamics] Apply ancient Chinese strategic frameworks "
-            "and workplace causality. Focus on analyzing the position's '利他性' (accumulating good karma through "
-            "valuable networks) and '反噬風險' (negative counter-forces / being the scapegoat)."
-        ),
-        "mixed": (
-            "[PERSPECTIVE: Unified Hybrid Matrix] Blending Western rational optimization "
-            "with Eastern macro-level strategic timing (外圓內方)."
-        )
+        "modern": "[PERSPECTIVE] Use modern business game theory, agile enterprise frameworks, and ROI leverage for deduction. Focus heavily on data efficiency and absolute monetization capabilities.",
+        "oriental": "[PERSPECTIVE] Apply ancient strategic wisdom and workplace karma for deduction. Focus heavily on analyzing the position's 'altruism' (accumulating good karma through networks) and 'backlash risk' (being the scapegoat / bad karma).",
+        "mixed": "[PERSPECTIVE] Blending Western rational optimization with Eastern macro-level strategic timing (外圆内方)."
     }
     current_perspective = mode_instructions.get(mode, mode_instructions["mixed"])
 
-    return f"""You are the core backend Oracle engine of "Z-Matrix AI" built for the Google Cloud for Startups AI Agents Challenge.
+    return f"""You are the core backend deduction engine (Oracle) of "Z-Matrix AI".
+
 
     [🚨 CRITICAL SYSTEM OVERRIDE: ZERO EXPLANATION ALLOWED 🚨]
     1. Your output MUST strictly start with '{{' and end with '}}'.
     2. Absolute prohibition on any markdown code blocks (e.g., ```json), conversational prefaces, or post-explanations.
-    3. Any output containing text outside the valid JSON object will result in immediate execution failure.
-
+    3. Even if you recognize it is a cultural framework or methodology, you MUST strictly return the JSON structure below and NO other text!
+    
     [STEP 1: COMPLIMENTARY INPUT VALIDATION & METHODOLOGY FILTER]
-    Verify target job: 【{target_job}】. If it represents a cultural framework, mindset, or methodology (e.g., DevOps, Agile, Scrum, Lean) rather than an independent execution role, immediately abort and output:
+    Verify target job: 【{target_job}】. If it represents a cultural methodology or collaboration framework (e.g., DevOps, Agile, Scrum, Lean) rather than an independent execution role, immediately abort and output:
     {{
         "status": "error",
         "error_type": "methodology_notice",
         "message": "Z-Matrix identified that 【{target_job}】 leans more toward a 'cultural methodology' or 'collaboration framework' in modern business contexts. The Career Compass recommends focusing deduction on a specific execution role (e.g., Software Engineer, Platform Developer, Operations Manager) to achieve highly precise causal deduction."
     }}
 
-    [STEP 2: MODEL DEDUCTION PERSPECTIVE]
+    If the job role is a valid execution role, strictly perform deduction based on the following perspective:
+
     {current_perspective}
 
-    [STEP 3: CORE DATA HYGIENE & CONSTRAINTS]
-    1. [Language Guardrail]: All generated text VALUES inside the JSON fields MUST be strictly in English to match the client-side rendering engine.
-    2. [No Structural Contamination]: Strictly forbid inclusion of newline characters (\\n), tab characters (\\t), or Markdown bolding (**). Keep string values completely inline.
-    3. [Information Condensation]: Do not repeat raw texts retrieved from Data Stores. You must abstract and compress multi-page analysis into precise, high-density outputs fitting the specific JSON schema.
+    [🚨 CORE COMPULSORY DISCIPLINE (System Override) 🚨]
+    1. You must only output a valid JSON object. No prefaces, conversational responses, or explanations. Do not use Markdown code blocks.
+    2. Do not repeat raw text retrieved from Data Stores. You must abstract and compress multi-page analysis into precise, high-density outputs fitting the specific JSON schema.
+    3. Strictly forbid inclusion of newline characters (\\n), tab characters (\\t), or Markdown bolding (**).
+    4. Do not wrap output in ```json code blocks. Start directly with {{ and end with }}.
+    5. [Language Guardrail]: All generated text VALUES inside the JSON fields MUST be strictly in English to match the client-side rendering engine.
+    6. [No Summary Paragraphs]: Never output the retrieved salary data or job descriptions as natural language paragraphs. Parse and integrate them into the specific JSON fields (e.g., `ai_risk_index` or `salary_trend`).
+    7. Any output containing text outside the valid JSON object will result in immediate execution failure.
 
-    [STEP 4: MANDATORY OUTPUT JSON SCHEMA]
+    [MANDATORY OUTPUT JSON SCHEMA]
     {{
         "status": "success",
         "data": {{
@@ -90,25 +86,21 @@ def get_master_instruction(target_job, mode):
     }}"""
 
 def run_compass_engine(target_job, mode):
-   
-  
-
-    active_tools = [tool_macro]
-    if mode == "modern" or mode == "mixed":
-        active_tools.append(tool_modern)
-    if mode == "oriental" or mode == "mixed":
-        active_tools.append(tool_oriental)
+    # Select exactly one tool based on mode to avoid multi-tool grounding constraint in Gemini API
+    if mode == "modern":
+        active_tools = [tool_modern]
+    elif mode == "oriental":
+        active_tools = [tool_oriental]
+    else:
+        active_tools = [tool_macro]
 
     instruction = get_master_instruction(target_job, mode)
 
-    # 2. Force enterprise version suffix to ensure it goes through the Vertex pipeline
     root_agent = LlmAgent(
         name="zmatrix_oracle",
-        model="gemini-2.5-pro",  # 🌟 Recommended to add -001 suffix for more stability
+        model="gemini-2.5-pro",
         instruction=instruction,
         tools=active_tools,
-        
-      
     )
     
     session_service = InMemorySessionService()
@@ -126,45 +118,26 @@ def run_compass_engine(target_job, mode):
     has_error = False
     error_msg = ""
     
-    # 3. Enhanced fallback parser: supports all 2.5 series versions
     for event in events:
         print(f"[Event Trace] Raw event received: {repr(event)}")
-        
-        # Check for event level errors
         if hasattr(event, 'error_code') and event.error_code:
             has_error = True
             error_msg = f"{event.error_code}: {event.error_message}"
             print(f"[Event Trace Error] Event contains error: {error_msg}")
-            
         try:
-            # Extract content from the event itself (Event inherits from LlmResponse)
-            if hasattr(event, 'content') and event.content and hasattr(event.content, 'parts') and event.content.parts:
+            # Path 1: Direct text (most common)
+            if hasattr(event, 'text') and event.text:
+                final_result += event.text
+            # Path 2: Nested content parts (common in newer 2.5 versions)
+            elif hasattr(event, 'content') and event.content.parts:
                 for part in event.content.parts:
                     if hasattr(part, 'text') and part.text:
                         final_result += part.text
-            # Compatible with older message structures
-            elif hasattr(event, 'message') and event.message and hasattr(event.message, 'content') and event.message.content:
-                if hasattr(event.message.content, 'parts') and event.message.content.parts:
-                    for part in event.message.content.parts:
-                        if hasattr(part, 'text') and part.text:
-                            final_result += part.text
-            # Direct text field fallback
-            elif hasattr(event, 'text') and event.text:
-                final_result += event.text
-            # Check event.output fallback (if defined and not None)
-            elif hasattr(event, 'output') and event.output is not None:
-                op = event.output
-                if isinstance(op, str):
-                    final_result += op
-                elif hasattr(op, 'text') and op.text:
-                    final_result += op.text
-                elif hasattr(op, 'content') and op.content and hasattr(op.content, 'parts') and op.content.parts:
-                    for part in op.content.parts:
-                        if hasattr(part, 'text') and part.text:
-                            final_result += part.text
-            # String payload fallback
-            elif isinstance(event, str):
-                final_result += event
+            # Path 3: Compatible with older message structures
+            elif hasattr(event, 'message') and event.message.content:
+                for part in event.message.content.parts:
+                    if hasattr(part, 'text') and part.text:
+                        final_result += part.text
         except Exception as e:
             print(f"[Event Trace Error] Failed to parse event: {e}")
             continue
@@ -176,13 +149,11 @@ def run_compass_engine(target_job, mode):
             return {"status": "error", "message": f"Deduction engine error: {error_msg}"}
         return {"status": "error", "message": "Deduction engine blocked mid-way. Please check the knowledge base configuration."}
 
-    # 🌟 JUDGES NOTE: Data cleaning pipeline to neutralize Gemini non-deterministic output anomalies.
-    # Completely resolves long-text markdown injections and citation artifacts from Vertex Search.
+    # Data cleaning pipeline to neutralize Gemini non-deterministic output anomalies
     clean_result = re.sub(r'\[\d+(?:,\s*\d+)*\]', '', final_result) 
     clean_result = clean_result.replace("```json", "").replace("```", "").strip()
     
-    # 🌟 JUDGES NOTE: Reverse-search heuristic anchor. Finds the absolute inner-bound JSON payload
-    # to guarantee 100% production uptime on Cloud Run microservices.
+    # Heuristic anchor to find the absolute inner-bound JSON payload
     start_idx = clean_result.rfind('{"status":') 
     if start_idx == -1:
         start_idx = clean_result.find('{')
