@@ -564,6 +564,21 @@
       flex-direction: column;
       gap: 4px;
     }
+    .cached-badge {
+      display: inline-block;
+      background: rgba(32, 227, 178, 0.2);
+      color: var(--cyan-primary);
+      border: 1px solid var(--cyan-primary);
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 4px;
+      width: fit-content;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 5px rgba(32, 227, 178, 0.4);
+    }
 
     .job-prefix {
       font-size: 13px;
@@ -1218,6 +1233,7 @@
           <div class="job-title-wrapper">
             <span class="job-prefix">Target Position:</span>
             <span class="job-title" id="outJobTitle">Software Engineer</span>
+            <span class="cached-badge" id="outCachedBadge" style="display: none;">⚡ Cached</span>
           </div>
           <div class="fortune-badge" id="outFortuneBadge">Pending</div>
         </div>
@@ -1659,7 +1675,7 @@
           window.scrollTo({ top: 0, behavior: 'smooth' });
 
           // Render output data
-          renderReport(job, res.data || res);
+          renderReport(job, res.data || res, res.cached);
         };
 
         if (elapsed < minimumWaitTime) {
@@ -1680,7 +1696,7 @@
       });
     }
 
-    function renderReport(job, rawReport) {
+    function renderReport(job, rawReport, isCached) {
       // Robust extract logic matching WeChat miniapp
       let coreData = rawReport.data?.data || rawReport.data || rawReport;
       
@@ -1724,6 +1740,11 @@
 
       // Populate text fields
       document.getElementById('outJobTitle').textContent = safeReport.target_job;
+      
+      const cachedBadge = document.getElementById('outCachedBadge');
+      if (cachedBadge) {
+        cachedBadge.style.display = isCached ? 'inline-block' : 'none';
+      }
       
       const badge = document.getElementById('outFortuneBadge');
       badge.textContent = badgeText;
