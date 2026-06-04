@@ -123,29 +123,48 @@ def run_compass_engine(target_job, mode):
     events = runner.run(user_id="system_api", session_id=session_id, new_message=content)
     
     final_result = ""
+    has_error = False
+    error_msg = ""
+    
     # 3. Enhanced fallback parser: supports all 2.5 series versions
     for event in events:
         print(f"[Event Trace] Raw event received: {repr(event)}")
-        try:
-            # Extract the actual response object if wrapped in an ADK Event
-            payload = event.output if hasattr(event, 'output') else event
+        
+        # Check for event level errors
+        if hasattr(event, 'error_code') and event.error_code:
+            has_error = True
+            error_msg = f"{event.error_code}: {event.error_message}"
+            print(f"[Event Trace Error] Event contains error: {error_msg}")
             
-            # Path 1: Direct text (most common)
-            if hasattr(payload, 'text') and payload.text:
-                final_result += payload.text
-            # Path 2: Nested content parts (common in newer 2.5 versions)
-            elif hasattr(payload, 'content') and payload.content.parts:
-                for part in payload.content.parts:
+        try:
+            # Extract content from the event itself (Event inherits from LlmResponse)
+            if hasattr(event, 'content') and event.content and hasattr(event.content, 'parts') and event.content.parts:
+                for part in event.content.parts:
                     if hasattr(part, 'text') and part.text:
                         final_result += part.text
-            # Path 3: Compatible with older message structures
-            elif hasattr(payload, 'message') and payload.message.content:
-                for part in payload.message.content.parts:
-                    if hasattr(part, 'text') and part.text:
-                        final_result += part.text
-            # Path 4: String payload fallback
-            elif isinstance(payload, str):
-                final_result += payload
+            # Compatible with older message structures
+            elif hasattr(event, 'message') and event.message and hasattr(event.message, 'content') and event.message.content:
+                if hasattr(event.message.content, 'parts') and event.message.content.parts:
+                    for part in event.message.content.parts:
+                        if hasattr(part, 'text') and part.text:
+                            final_result += part.text
+            # Direct text field fallback
+            elif hasattr(event, 'text') and event.text:
+                final_result += event.text
+            # Check event.output fallback (if defined and not None)
+            elif hasattr(event, 'output') and event.output is not None:
+                op = event.output
+                if isinstance(op, str):
+                    final_result += op
+                elif hasattr(op, 'text') and op.text:
+                    final_result += op.text
+                elif hasattr(op, 'content') and op.content and hasattr(op.content, 'parts') and op.content.parts:
+                    for part in op.content.parts:
+                        if hasattr(part, 'text') and part.text:
+                            final_result += part.text
+            # String payload fallback
+            elif isinstance(event, str):
+                final_result += event
         except Exception as e:
             print(f"[Event Trace Error] Failed to parse event: {e}")
             continue
@@ -153,6 +172,8 @@ def run_compass_engine(target_job, mode):
     print(f"[Agent Trace] Final extracted result length: {len(final_result)}")
     
     if not final_result.strip():
+        if has_error:
+            return {"status": "error", "message": f"Deduction engine error: {error_msg}"}
         return {"status": "error", "message": "Deduction engine blocked mid-way. Please check the knowledge base configuration."}
 
     # 🌟 JUDGES NOTE: Data cleaning pipeline to neutralize Gemini non-deterministic output anomalies.
