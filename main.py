@@ -50,7 +50,9 @@ def generate_compass(req: CompassRequest):
         result = run_compass_engine(req.target_job, req.mode)
         
         # 4. Save to cache asynchronously
-        if doc_ref and result:
+        # Only cache structured successful responses, prevent caching fallback raw_text
+        is_valid_result = isinstance(result, dict) and "raw_text" not in result
+        if doc_ref and result and is_valid_result:
             doc_ref.set({
                 "job": req.target_job,
                 "mode": req.mode,
