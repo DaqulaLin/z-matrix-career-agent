@@ -125,6 +125,7 @@ def run_compass_engine(target_job, mode):
     final_result = ""
     # 3. Enhanced fallback parser: supports all 2.5 series versions
     for event in events:
+        print(f"[Event Trace] Raw event received: {repr(event)}")
         try:
             # Path 1: Direct text (most common)
             if hasattr(event, 'text') and event.text:
@@ -139,8 +140,11 @@ def run_compass_engine(target_job, mode):
                 for part in event.message.content.parts:
                     if hasattr(part, 'text') and part.text:
                         final_result += part.text
-        except:
+        except Exception as e:
+            print(f"[Event Trace Error] Failed to parse event: {e}")
             continue
+            
+    print(f"[Agent Trace] Final extracted result length: {len(final_result)}")
     
     if not final_result.strip():
         return {"status": "error", "message": "Deduction engine blocked mid-way. Please check the knowledge base configuration."}
