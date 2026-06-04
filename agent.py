@@ -94,7 +94,10 @@ def run_compass_engine(target_job, mode):
   
 
     active_tools = [tool_macro]
-    # ... Tool selection logic remains unchanged ...
+    if mode == "modern" or mode == "mixed":
+        active_tools.append(tool_modern)
+    if mode == "oriental" or mode == "mixed":
+        active_tools.append(tool_oriental)
 
     instruction = get_master_instruction(target_job, mode)
 
