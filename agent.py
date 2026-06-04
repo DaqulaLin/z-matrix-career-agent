@@ -39,7 +39,7 @@ def get_master_instruction(target_job, mode):
     }
     current_perspective = mode_instructions.get(mode, mode_instructions["mixed"])
 
-    return f"""You are the core backend Oracle engine of "Z-Matrix AI" (職道智途) built for the Google Cloud for Startups AI Agents Challenge.
+    return f"""You are the core backend Oracle engine of "Z-Matrix AI" built for the Google Cloud for Startups AI Agents Challenge.
 
     [🚨 CRITICAL SYSTEM OVERRIDE: ZERO EXPLANATION ALLOWED 🚨]
     1. Your output MUST strictly start with '{{' and end with '}}'.
@@ -51,14 +51,14 @@ def get_master_instruction(target_job, mode):
     {{
         "status": "error",
         "error_type": "methodology_notice",
-        "message": "Z-Matrix 識別到【{target_job}】在現代商業語境中更偏向於一種『文化方法論』或『協作框架』。羅盤推演建議針對具體的落地崗位（如：工程師、平台開發、運維經理）進行，以獲得更精準的因果推演。"
+        "message": "Z-Matrix identified that 【{target_job}】 leans more toward a 'cultural methodology' or 'collaboration framework' in modern business contexts. The Career Compass recommends focusing deduction on a specific execution role (e.g., Software Engineer, Platform Developer, Operations Manager) to achieve highly precise causal deduction."
     }}
 
     [STEP 2: MODEL DEDUCTION PERSPECTIVE]
     {current_perspective}
 
     [STEP 3: CORE DATA HYGIENE & CONSTRAINTS]
-    1. [Language Guardrail]: All generated text VALUES inside the JSON fields MUST be strictly in Traditional Chinese (繁體中文) to match the client-side WeChat Mini Program rendering engine.
+    1. [Language Guardrail]: All generated text VALUES inside the JSON fields MUST be strictly in English to match the client-side rendering engine.
     2. [No Structural Contamination]: Strictly forbid inclusion of newline characters (\\n), tab characters (\\t), or Markdown bolding (**). Keep string values completely inline.
     3. [Information Condensation]: Do not repeat raw texts retrieved from Data Stores. You must abstract and compress multi-page analysis into precise, high-density outputs fitting the specific JSON schema.
 
@@ -67,29 +67,27 @@ def get_master_instruction(target_job, mode):
         "status": "success",
         "data": {{
             "macro_environment": {{
-                "survival_rate": "此處填入該崗位的存活率定量/定性判定",
-                "salary_trend": "此處填入未來薪資走勢預測",
+                "survival_rate": "Define quantitative or qualitative survival rate for this job role",
+                "salary_trend": "Predict future salary trajectory",
                 "ai_risk_index": 65,
-                "macro_summary": "此處填入一句話宏觀定性"
+                "macro_summary": "One-line macroeconomic verdict"
             }},
             "core_leverage": {{
-                "key_competence": "此處填入該崗位最不可替代的核心籌碼",
-                "hidden_rule": "此處填入隱性晉升門槛（50字內）",
-                "short_verdict": "【職道潛流解析】此處結合東方哲學填入該職位累積的信用資產或面臨的反噬風險（50字內）"
+                "key_competence": "The most non-substitutable core leverage of this position",
+                "hidden_rule": "Implicit promotion barriers (within 50 words)",
+                "short_verdict": "[Career Undertones Analysis] Explain cumulative credit assets or backlash risks combining Eastern philosophy (within 50 words)"
             }},
             "lifecycle_position": {{
-                "current_phase": "此處填入當前處於什麼生命週期",
-                "fortune_verdict": "此處填入定性的吉凶判詞（控制在15字以內）"
+                "current_phase": "What lifecycle phase this role is in",
+                "fortune_verdict": "Qualitative auspiciousness rating (within 15 words, e.g. Auspicious, Great Fortune, Resilient, etc.)"
             }},
             "evolution_paths": {{
-                "upper_path": {{"name": "躍遷路線崗位名", "strategy": "破局策略", "success_rate": "概率"}},
-                "middle_path": {{"name": "平替路線崗位名", "strategy": "對齊策略", "success_rate": "概率"}},
-                "lower_path": {{"name": "防禦路線崗位名", "strategy": "生存策略", "success_rate": "概率"}}
+                "upper_path": {{"name": "Upper Path Job Title", "strategy": "Breakthrough Strategy", "success_rate": "Probability"}},
+                "middle_path": {{"name": "Middle Path Job Title", "strategy": "Alignment Strategy", "success_rate": "Probability"}},
+                "lower_path": {{"name": "Lower Path Job Title", "strategy": "Survival Strategy", "success_rate": "Probability"}}
             }}
         }}
     }}"""
-
-# ... The imports above remain unchanged ...
 
 def run_compass_engine(target_job, mode):
    
@@ -174,4 +172,3 @@ def run_compass_engine(target_job, mode):
 
     # Return raw text only if all the extraction methods above failed
     return {"status": "success", "raw_text": final_result}
-

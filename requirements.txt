@@ -4,4 +4,5 @@ google-genai
 google-adk>=0.1.0
 google-cloud-aiplatform>=1.70.0
 google-cloud-discoveryengine
+aiofiles
 # Removed flask and gunicorn as they are no longer needed
