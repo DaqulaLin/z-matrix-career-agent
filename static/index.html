@@ -1091,33 +1091,98 @@
        7. Desktop Responsive Enhancements (Tailwind md: equivalent)
        ========================================== */
     @media (min-width: 768px) {
-      /* Input field & Quick tags desktop adjustments */
+      /* Cockpit desktop adjustments */
+      .cockpit-title {
+        font-size: 36px;
+      }
       .cockpit-input {
-        font-size: 18px; /* md:text-lg */
+        font-size: 18px;
       }
       .cockpit-input::placeholder {
         font-size: 18px;
       }
+      .quick-tags-container {
+        font-size: 15px;
+      }
       .quick-tag {
-        font-size: 14px; /* md:text-sm */
-        padding: 8px 16px; /* increased padding for capsule feel */
-        border-radius: 20px; /* capsule button shape */
+        font-size: 14px;
+        padding: 8px 18px;
+        border-radius: 20px;
       }
-
-      /* Slider description desktop adjustment */
-      .slider-desc {
-        font-size: 14px; /* md:text-sm */
-        text-align: center;
-      }
-
-      /* About text cards desktop adjustments (🚨 Core) */
-      .explanation-title {
+      .slider-labels {
         font-size: 16px;
-        letter-spacing: 2px; /* tracking-wider */
+      }
+      .slider-desc {
+        font-size: 15px;
+      }
+      .cockpit-btn {
+        font-size: 20px;
+        padding: 20px 0;
+      }
+
+      /* About text cards desktop adjustments */
+      .explanation-title {
+        font-size: 18px;
+        letter-spacing: 2px;
       }
       .explanation-text {
-        font-size: 16px; /* md:text-base */
-        line-height: 1.85; /* leading-relaxed breathing space */
+        font-size: 16px;
+        line-height: 1.85;
+      }
+
+      /* Report elements desktop text scaling */
+      .job-title {
+        font-size: 34px;
+      }
+      .risk-title {
+        font-size: 16px;
+      }
+      .risk-percent {
+        font-size: 38px;
+      }
+      .macro-summary {
+        font-size: 16px;
+        line-height: 1.8;
+      }
+      .karma-title {
+        font-size: 18px;
+      }
+      .karma-content {
+        font-size: 16px;
+        line-height: 1.85;
+      }
+      .section-title {
+        font-size: 18px;
+      }
+      .leverage-title {
+        font-size: 17px;
+      }
+      .leverage-content {
+        font-size: 15.5px;
+        line-height: 1.75;
+      }
+      .path-name {
+        font-size: 17px;
+      }
+      .path-desc {
+        font-size: 13px;
+      }
+      .rate-value {
+        font-size: 22px;
+      }
+      .rate-prefix {
+        font-size: 12px;
+      }
+      .path-strategy {
+        font-size: 15.5px;
+        line-height: 1.75;
+      }
+      .reset-btn {
+        font-size: 16.5px;
+        padding: 16px;
+      }
+      .footer-decl {
+        font-size: 13px;
       }
     }
   </style>
