@@ -5,6 +5,7 @@ import asyncio
 import re
 from google.adk.agents import LlmAgent
 from google.adk.tools import VertexAiSearchTool
+from google.adk.tools.discovery_engine_search_tool import DiscoveryEngineSearchTool
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
@@ -16,10 +17,35 @@ PATH_MODERN   = PROJECT_BASE + "zmatrix-compass-modern-strategy_1774113028464"
 PATH_ORIENTAL = PROJECT_BASE + "zmatrix-compass-oriental-wisdom_1774112672636"
 PATH_MACRO    = PROJECT_BASE + "zmatrix-compass-macro-trends_1774098671724"
 
+class CustomSearchTool(DiscoveryEngineSearchTool):
+    def __init__(self, name: str, description: str, data_store_id: str):
+        super().__init__(data_store_id=data_store_id)
+        self.name = name
+        self.description = description
+
+    def _get_declaration(self):
+        decl = super()._get_declaration()
+        if decl:
+            decl.name = self.name
+            decl.description = self.description
+        return decl
+
 # --- 2. Instantiate search tools ---
-tool_modern   = VertexAiSearchTool(data_store_id=PATH_MODERN)
-tool_oriental = VertexAiSearchTool(data_store_id=PATH_ORIENTAL)
-tool_macro    = VertexAiSearchTool(data_store_id=PATH_MACRO)
+tool_modern = CustomSearchTool(
+    name="search_modern_strategy",
+    description="Search modern business strategy, agile frameworks, and data-driven decision making guidelines.",
+    data_store_id=PATH_MODERN
+)
+tool_oriental = CustomSearchTool(
+    name="search_oriental_wisdom",
+    description="Search strategic foresight, relationship dynamics, and career risk mitigation wisdom.",
+    data_store_id=PATH_ORIENTAL
+)
+tool_macro = CustomSearchTool(
+    name="search_macro_trends",
+    description="Search macroeconomic trends, labor market reports, and salary data.",
+    data_store_id=PATH_MACRO
+)
 
 def get_master_instruction(target_job, mode):
     mode_instructions = {
