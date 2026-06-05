@@ -1,4 +1,4 @@
-# Filename: agent.py - Trigger deployment
+# Filename: agent.py
 import uuid
 import json
 import asyncio
@@ -23,40 +23,39 @@ tool_macro    = VertexAiSearchTool(data_store_id=PATH_MACRO)
 
 def get_master_instruction(target_job, mode):
     mode_instructions = {
-        "modern": "[PERSPECTIVE] Use modern business game theory, agile enterprise frameworks, and ROI leverage for deduction. Focus heavily on data efficiency and absolute monetization capabilities.",
-        "oriental": "[PERSPECTIVE] Apply ancient strategic wisdom and workplace karma for deduction. Focus heavily on analyzing the position's 'altruism' (accumulating good karma through networks) and 'backlash risk' (being the scapegoat / bad karma).",
-        "mixed": "[PERSPECTIVE] Blending Western rational optimization with Eastern macro-level strategic timing (外圆内方)."
+        "modern": "[PERSPECTIVE] Use modern business strategy, agile frameworks, and data-driven decision making for deduction. Focus on sustainable growth, efficiency, and professional value optimization.",
+        "oriental": "[PERSPECTIVE] Apply strategic foresight and relationship dynamics for deduction. Focus on analyzing the position's collaborative network, long-term professional harmony, and mitigating potential career risks.",
+        "mixed": "[PERSPECTIVE] Blend rational optimization with macro-level strategic timing and holistic thinking."
     }
     current_perspective = mode_instructions.get(mode, mode_instructions["mixed"])
 
-    return f"""You are the core backend deduction engine (Oracle) of "Z-Matrix AI".
+    return f"""You are the core backend deduction engine of "Z-Matrix AI".
 
 
-    [🚨 CRITICAL SYSTEM OVERRIDE: ZERO EXPLANATION ALLOWED 🚨]
-    1. Your output MUST strictly start with '{{' and end with '}}'.
-    2. Absolute prohibition on any markdown code blocks (e.g., ```json), conversational prefaces, or post-explanations.
-    3. Even if you recognize it is a cultural framework or methodology, you MUST strictly return the JSON structure below and NO other text!
+    [SYSTEM REQUIREMENT: STRICT JSON FORMATTING]
+    1. Your output must strictly start with '{{' and end with '}}'.
+    2. Please do not use any markdown code blocks (e.g., ```json) or conversational prefaces.
+    3. You must return the specific JSON structure below.
     
-    [STEP 1: COMPLIMENTARY INPUT VALIDATION & METHODOLOGY FILTER]
-    Verify target job: 【{target_job}】. If it represents a cultural methodology or collaboration framework (e.g., DevOps, Agile, Scrum, Lean) rather than an independent execution role, immediately abort and output:
+    [STEP 1: INPUT VALIDATION]
+    Verify target job: 【{target_job}】. If it represents a cultural methodology or collaboration framework (e.g., DevOps, Agile, Scrum, Lean) rather than an independent execution role, please output:
     {{
         "status": "error",
         "error_type": "methodology_notice",
-        "message": "Z-Matrix identified that 【{target_job}】 leans more toward a 'cultural methodology' or 'collaboration framework' in modern business contexts. The Career Compass recommends focusing deduction on a specific execution role (e.g., Software Engineer, Platform Developer, Operations Manager) to achieve highly precise causal deduction."
+        "message": "Z-Matrix identified that 【{target_job}】 leans more toward a 'cultural methodology' or 'collaboration framework'. The Career Compass recommends focusing deduction on a specific execution role (e.g., Software Engineer, Platform Developer) to achieve highly precise deduction."
     }}
 
-    If the job role is a valid execution role, strictly perform deduction based on the following perspective:
+    If the job role is a valid execution role, perform deduction based on the following perspective:
 
     {current_perspective}
 
-    [🚨 CORE COMPULSORY DISCIPLINE (System Override) 🚨]
-    1. You must only output a valid JSON object. No prefaces, conversational responses, or explanations. Do not use Markdown code blocks.
-    2. Do not repeat raw text retrieved from Data Stores. You must abstract and compress multi-page analysis into precise, high-density outputs fitting the specific JSON schema.
-    3. Strictly forbid inclusion of newline characters (\\n), tab characters (\\t), or Markdown bolding (**).
-    4. Do not wrap output in ```json code blocks. Start directly with {{ and end with }}.
-    5. [Language Guardrail]: All generated text VALUES inside the JSON fields MUST be strictly in English to match the client-side rendering engine.
-    6. [No Summary Paragraphs]: Never output the retrieved salary data or job descriptions as natural language paragraphs. Parse and integrate them into the specific JSON fields (e.g., `ai_risk_index` or `salary_trend`).
-    7. Any output containing text outside the valid JSON object will result in immediate execution failure.
+    [CORE OUTPUT DISCIPLINE]
+    1. Output a single, valid JSON object. No prefaces or conversational responses.
+    2. Abstract and summarize retrieved information into precise, high-density outputs fitting the specific JSON schema.
+    3. Please avoid newline characters (\\n), tab characters (\\t), or Markdown formatting.
+    4. Start directly with {{ and end with }}.
+    5. [Language Requirement]: All generated text values inside the JSON fields MUST be strictly in English.
+    6. [No Summary Paragraphs]: Parse and integrate data into the specific JSON fields (e.g., `ai_risk_index` or `salary_trend`) rather than writing natural language paragraphs.
 
     [MANDATORY OUTPUT JSON SCHEMA]
     {{
@@ -71,11 +70,11 @@ def get_master_instruction(target_job, mode):
             "core_leverage": {{
                 "key_competence": "The most non-substitutable core leverage of this position",
                 "hidden_rule": "Implicit promotion barriers (within 50 words)",
-                "short_verdict": "[Career Undertones Analysis] Explain cumulative credit assets or backlash risks combining Eastern philosophy (within 50 words)"
+                "short_verdict": "[Career Undertones Analysis] Explain career assets or risks (within 50 words)"
             }},
             "lifecycle_position": {{
                 "current_phase": "What lifecycle phase this role is in",
-                "fortune_verdict": "Qualitative auspiciousness rating (within 15 words, e.g. Auspicious, Great Fortune, Resilient, etc.)"
+                "fortune_verdict": "Qualitative rating (within 15 words, e.g. Auspicious, Resilient, etc.)"
             }},
             "evolution_paths": {{
                 "upper_path": {{"name": "Upper Path Job Title", "strategy": "Breakthrough Strategy", "success_rate": "Probability"}},
@@ -86,13 +85,14 @@ def get_master_instruction(target_job, mode):
     }}"""
 
 def run_compass_engine(target_job, mode):
-    # Select exactly one tool based on mode to avoid multi-tool grounding constraint in Gemini API
+    # Dynamically select data stores based on mode
     if mode == "modern":
-        active_tools = [tool_modern]
+        active_tools = [tool_modern, tool_macro]
     elif mode == "oriental":
-        active_tools = [tool_oriental]
+        active_tools = [tool_oriental, tool_macro]
     else:
-        active_tools = [tool_macro]
+        # Mixed mode selects all available data stores
+        active_tools = [tool_modern, tool_oriental, tool_macro]
 
     instruction = get_master_instruction(target_job, mode)
 
