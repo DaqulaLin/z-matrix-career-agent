@@ -4,7 +4,7 @@ import json
 import asyncio
 import re
 from google.adk.agents import LlmAgent
-from google.adk.tools import google_search
+from google.adk.tools import VertexAiSearchTool
 from google.adk.tools.discovery_engine_search_tool import DiscoveryEngineSearchTool
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
@@ -75,9 +75,6 @@ def get_master_instruction(target_job, mode):
 
     {current_perspective}
 
-    [REAL-TIME TREND GROUNDING]
-    You have access to the 'google_search' tool. When analyzing macroeconomic environments, labor market reports, and future salary/AI risk trends (via 'search_macro_trends'), you should also call the 'google_search' tool to check for the most up-to-date, real-time market dynamics and news, merging it with historical trend database data to make the prediction extremely accurate.
-
     [CORE OUTPUT DISCIPLINE]
     1. Output a single, valid JSON object. No prefaces or conversational responses.
     2. Abstract and summarize retrieved information into precise, high-density outputs fitting the specific JSON schema.
@@ -116,12 +113,12 @@ def get_master_instruction(target_job, mode):
 def run_compass_engine(target_job, mode):
     # Dynamically select data stores based on mode
     if mode == "modern":
-        active_tools = [tool_modern, tool_macro, google_search]
+        active_tools = [tool_modern, tool_macro]
     elif mode == "oriental":
-        active_tools = [tool_oriental, tool_macro, google_search]
+        active_tools = [tool_oriental, tool_macro]
     else:
         # Mixed mode selects all available data stores
-        active_tools = [tool_modern, tool_oriental, tool_macro, google_search]
+        active_tools = [tool_modern, tool_oriental, tool_macro]
 
     instruction = get_master_instruction(target_job, mode)
 
