@@ -90,7 +90,7 @@ def get_master_instruction(target_job, mode):
             "macro_environment": {{
                 "survival_rate": "Define quantitative or qualitative survival rate for this job role",
                 "salary_trend": "Predict future salary trajectory",
-                "ai_risk_index": 65,
+                "ai_risk_index": "Generate an integer between 0 and 100 calculating the AI replacement risk",
                 "macro_summary": "One-line macroeconomic verdict"
             }},
             "core_leverage": {{
